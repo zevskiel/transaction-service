@@ -17,6 +17,15 @@ public class Startup
             options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddControllers();
+
+        // Add CORS policy
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAnyOrigin",
+                builder => builder.AllowAnyOrigin()
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader());
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -28,6 +37,9 @@ public class Startup
 
         app.UseRouting();
         app.UseAuthorization();
+
+        // Enable CORS
+        app.UseCors("AllowAnyOrigin");
 
         app.UseEndpoints(endpoints =>
         {
