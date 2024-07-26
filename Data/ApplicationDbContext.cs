@@ -13,8 +13,6 @@ namespace ConstructionProjectManagement.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Remove ProjectStage constraint configuration
         }
     }
 }

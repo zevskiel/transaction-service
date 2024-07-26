@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.UseCors(); // Add this line to enable CORS
+app.UseCors();
 app.MapControllers();
 
 app.Run();
