@@ -20,6 +20,9 @@ namespace ConstructionProjectManagement.Models
         public string ProjectStage { get; set; }
 
         [Required]
+        public string ProjectCategory { get; set; }
+
+        [Required]
         public DateTime ProjectStartDate { get; set; }
 
         [Required]
@@ -28,7 +31,5 @@ namespace ConstructionProjectManagement.Models
 
         [Required]
         public int ProjectCreatorId { get; set; }
-
-        public User ProjectCreator { get; set; }
     }
 }

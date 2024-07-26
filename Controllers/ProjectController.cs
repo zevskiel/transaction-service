@@ -26,7 +26,7 @@ namespace ConstructionProjectManagement.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Project>>> GetProjects()
         {
-            var projects = await _context.Projects.Include(p => p.ProjectCreator).ToListAsync();
+            var projects = await _context.Projects.ToListAsync();
             return Ok(projects);
         }
 
@@ -34,7 +34,7 @@ namespace ConstructionProjectManagement.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Project>> GetProject(int id)
         {
-            var project = await _context.Projects.Include(p => p.ProjectCreator).FirstOrDefaultAsync(p => p.ProjectId == id);
+            var project = await _context.Projects.FindAsync(id);
 
             if (project == null)
             {
@@ -50,11 +50,14 @@ namespace ConstructionProjectManagement.Controllers
         {
             // Validate future date for specific stages
             if (new[] { "Concept", "Design & Documentation", "Pre-Construction" }.Contains(project.ProjectStage) &&
-                project.ProjectStartDate <= DateTime.Now)
+            project.ProjectStartDate <= DateTime.Now)
             {
                 return BadRequest("Project start date must be in the future for stages: Concept, Design & Documentation, Pre-Construction");
             }
 
+            // Set the ProjectId to 0 to allow the database to generate the auto-increment value
+            project.ProjectId = int.Parse(GenerateNewRandom());
+            project.ProjectStartDate = project.ProjectStartDate.ToUniversalTime();
             _context.Projects.Add(project);
             await _context.SaveChangesAsync();
 
@@ -81,6 +84,7 @@ namespace ConstructionProjectManagement.Controllers
 
             try
             {
+                project.ProjectStartDate = project.ProjectStartDate.ToUniversalTime();
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -118,5 +122,17 @@ namespace ConstructionProjectManagement.Controllers
         {
             return _context.Projects.Any(e => e.ProjectId == id);
         }
+
+        private static string GenerateNewRandom()
+        {
+            Random generator = new Random();
+            String r = generator.Next(0, 1000000).ToString("D6");
+            if (r.Distinct().Count() == 1)
+            {
+                r = GenerateNewRandom();
+            }
+            return r;
+        }
     }
+    
 }
